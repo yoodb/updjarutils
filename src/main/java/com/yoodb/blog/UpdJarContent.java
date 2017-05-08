@@ -1,4 +1,4 @@
-package com.yoodb.blog;
+package com.test;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -58,7 +58,11 @@ public class UpdJarContent {
 		}
 	}
 	
-	private void getFiles(String filePath) {
+	/**
+	 * 将文件夹下所有文件存储
+	 * @param filePath
+	 */
+	public static ArrayList<String> getFiles(String filePath) {
 		File root = new File(filePath);
 		File[] files = root.listFiles();
 		for (File file : files) {
@@ -68,5 +72,32 @@ public class UpdJarContent {
 				filelist.add(file.getAbsolutePath());
 			}
 		}
+		return filelist;
 	}
+	
+	/**
+	 * 将文件夹下所有jar存储
+	 * @param filePath
+	 */
+	public static ArrayList<File> searchJarFiles(String filePath) {
+		ArrayList<File> filelist = new ArrayList<File>();
+        File f = new File(filePath);
+        if (!f.exists()) {
+        	log.info(filePath + " not exists");
+            return null;
+        }
+        File fa[] = f.listFiles();
+        for (int i = 0; i < fa.length; i++) {
+            File file = fa[i];
+            if (file.isDirectory()) {
+            	log.info(file.getName() + " [目录]");
+            } else {
+            	String path = file.getAbsolutePath();
+				if(path.contains(".jar") && path.contains("_1.jar")){
+					filelist.add(file);
+				}
+            }
+        }
+        return filelist;
+    }
 }
