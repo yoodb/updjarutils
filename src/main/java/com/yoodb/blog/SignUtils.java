@@ -7,17 +7,17 @@ public class SignUtils {
 	public String originalUrl = "org.wso2.carbon.service.mgt.ui_4.7.0";
 	
 	/**
-	 * 解压后的文件夹目录
+	 * 解压后的文件夹目录路径
 	 */
 	public String filePath = "E:\\org.wso2.carbon.service.mgt.ui_4.7.0";
 	
 	/**
-	 * 需要解压的文件夹
+	 * 需要解压的压缩包路径
 	 */
 	public String jarPath = "E:\\org.wso2.carbon.service.mgt.ui_4.7.0.jar";
 	
 	/**
-	 * 新打包后的压缩包名称
+	 * 新打包后的压缩包路径
 	 */
 	public String jarNewPath = "E:\\org.wso2.carbon.service.mgt.ui_4.7.1.jar";
 
