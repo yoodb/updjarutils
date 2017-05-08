@@ -1,4 +1,4 @@
-package com.test;
+package com.yoodb.blog;
 
 import java.io.BufferedInputStream;
 import java.io.File;
