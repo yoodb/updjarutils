@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class UpdJarContent {
 	
-	private static Log log = LogFactory.getLog(Compressor.class);
+	private static Log log = LogFactory.getLog(UpdJarContent.class);
 	
 	private static ArrayList<String> filelist = new ArrayList<String>();
 	
