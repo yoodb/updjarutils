@@ -19,13 +19,15 @@ public class UpdJarContent {
 	
 	private static ArrayList<String> filelist = new ArrayList<String>();
 	
-	public void updJarContent(SignUtils sign,String... proName) throws Exception {
+	public void updJarContent(SignUtils sign,FileOutputStream logfile,String... proName) throws Exception {
 		List<String> filePathlist = new ArrayList<String>();
 		for (int i = 0; i < proName.length; i++) {
 			Decompression.uncompress(new File(sign.getJarPath()),new File( sign.getFilePath()));
 			getFiles(sign.getFilePath());
 			for (String string : filelist) {
 				if(string.contains(proName[i])){
+					logfile.write((string).getBytes());
+					logfile.write("\r\n".getBytes());
 					filePathlist.add(string);
 					Properties pro = new Properties();
 					InputStream in = new BufferedInputStream (new FileInputStream(string));
@@ -93,7 +95,7 @@ public class UpdJarContent {
             	log.info(file.getName() + " [目录]");
             } else {
             	String path = file.getAbsolutePath();
-				if(path.contains(".jar") && path.contains("_1.jar")){
+				if(path.contains(".jar") && !path.contains("_1.jar")){
 					filelist.add(file);
 				}
             }
