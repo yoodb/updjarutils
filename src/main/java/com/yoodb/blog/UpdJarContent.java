@@ -1,9 +1,10 @@
-package com.yoodb.blog;
+package com.test;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,11 +41,22 @@ public class UpdJarContent {
 						String key = it.next();
 						String value = pro.getProperty(key);
 						log.info("key-->" + key + "    value-->" + value);
-						String cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+						String cntext = null;
+						try {
+							cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+						} catch (Exception e) {
+							// TODO: handle exception
+							log.error(e.getMessage());
+							Thread.sleep(3000);
+							cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+						}
+						
 						log.info("key-->" + key + "    value-->" + cntext);
 						pro.put(key, cntext);
 					}
 					pro.store(yfile, "file update...");
+					yfile.close();
+					originalfile.close();
 					in.close();
 				}
 				
@@ -95,11 +107,26 @@ public class UpdJarContent {
             	log.info(file.getName() + " [目录]");
             } else {
             	String path = file.getAbsolutePath();
-				if(path.contains(".jar") && !path.contains("_1.jar")){
+				if(path.contains("ui_") && path.contains(".jar") && !path.contains("_1.jar")){
 					filelist.add(file);
 				}
             }
         }
         return filelist;
     }
+	
+	public static void createFile(String path,String fileName) {
+		File f = new File(path);
+		if (!f.exists()) {
+			f.mkdirs();
+		}
+		File file = new File(f, fileName);
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
