@@ -42,6 +42,8 @@ public class Tests {
 			ut.updJarContent(ss,logfile,proName);
 			logfile.write(("------" + path + "------").getBytes());
 			logfile.write("\r\n".getBytes());
+			DeleteDirectory.deleteDir(new File(filePath));
+			log.info("删除临时解压文件 -->" + filePath + "<-- 成功！");
 		}
 		logfile.close();
 	}
