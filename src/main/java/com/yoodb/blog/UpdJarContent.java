@@ -18,70 +18,76 @@ public class UpdJarContent {
 	
 	private static Log log = LogFactory.getLog(UpdJarContent.class);
 	
-	private static ArrayList<String> filelist = new ArrayList<String>();
 	
 	public void updJarContent(SignUtils sign,FileOutputStream logfile,String... proName) throws Exception {
-		List<String> filePathlist = new ArrayList<String>();
-		for (int i = 0; i < proName.length; i++) {
-			Decompression.uncompress(new File(sign.getJarPath()),new File( sign.getFilePath()));
-			getFiles(sign.getFilePath());
-			for (String string : filelist) {
-				if(string.contains(proName[i])){
-					logfile.write((string).getBytes());
-					logfile.write("\r\n".getBytes());
-					filePathlist.add(string);
-					Properties pro = new Properties();
-					InputStream in = new BufferedInputStream (new FileInputStream(string));
-					pro.load(in);
-					Iterator<String> it = pro.stringPropertyNames().iterator();
-					FileOutputStream yfile = new FileOutputStream(string);
-					FileOutputStream originalfile = new FileOutputStream(string.replace(proName[i], "original_file"));
-					pro.store(originalfile, "file update...");
-					while(it.hasNext()){
-						String key = it.next();
-						String value = pro.getProperty(key);
-						log.info("key-->" + key + "    value-->" + value);
-						String cntext = null;
-						try {
-							cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
-						} catch (Exception e) {
-							// TODO: handle exception
-							log.error(e.getMessage());
-							Thread.sleep(3000);
-							cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+			if(!isExists(sign.getJarNewPath())){
+				List<String> filePathlist = new ArrayList<String>();
+				for (int i = 0; i < proName.length; i++) {
+					Decompression.uncompress(new File(sign.getJarPath()),new File( sign.getFilePath()));
+					ArrayList<String> filelist = new ArrayList<String>();
+					getFiles(sign.getFilePath(),filelist);
+					for (String string : filelist) {
+						if(string.contains(proName[i])){
+							logfile.write((string).getBytes());
+							logfile.write("\r\n".getBytes());
+							filePathlist.add(string);
+							Properties pro = new Properties();
+							InputStream in = new BufferedInputStream (new FileInputStream(string));
+							pro.load(in);
+							Iterator<String> it = pro.stringPropertyNames().iterator();
+							FileOutputStream yfile = new FileOutputStream(string);
+							FileOutputStream originalfile = new FileOutputStream(string.replace(proName[i], "original_file"));
+							pro.store(originalfile, "file update...");
+							while(it.hasNext()){
+								String key = it.next();
+								String value = pro.getProperty(key);
+								log.info("key-->" + key + "    value-->" + value);
+								String cntext = null;
+								try {
+									cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+									//Thread.sleep(1000);
+								} catch (Exception e) {
+									// TODO: handle exception
+									log.error(e.getMessage());
+									Thread.sleep(20000);
+									cntext = TranslateUtil.translate(value,TranslateUtil.ENGLISH,TranslateUtil.CHINA);
+								}
+								
+								log.info("key-->" + key + "    value-->" + cntext);
+								pro.put(key, cntext);
+							}
+							pro.store(yfile, "file update...");
+							yfile.close();
+							originalfile.close();
+							in.close();
 						}
 						
-						log.info("key-->" + key + "    value-->" + cntext);
-						pro.put(key, cntext);
 					}
-					pro.store(yfile, "file update...");
-					yfile.close();
-					originalfile.close();
-					in.close();
-				}
-				
-			}
-			Compressor zc = new Compressor(sign.getJarNewPath());
-			zc.setOriginalUrl(sign.getOriginalUrl());
-			zc.compress(sign.getFilePath());
-			log.info("恭喜修改压缩文件成功！！！！，修改文件如下：");
-			for (String string : filePathlist) {
-				log.info("update file path is [" + string + "]");
+					Compressor zc = new Compressor(sign.getJarNewPath());
+					zc.setOriginalUrl(sign.getOriginalUrl());
+					zc.compress(sign.getFilePath());
+					log.info("恭喜修改压缩文件成功！！！！，修改文件如下：");
+					for (String string : filePathlist) {
+						log.info("update file path is [" + string + "]");
+					}
 			}
 			
+		}else{
+			log.info("jar包已经存在--->" + sign.getJarNewPath());
 		}
 	}
 	
 	/**
 	 * 将文件夹下所有文件存储
 	 * @param filePath
+	 * @param filelist 
 	 */
-	public static ArrayList<String> getFiles(String filePath) {
+	public static ArrayList<String> getFiles(String filePath, ArrayList<String> filelist) {
 		File root = new File(filePath);
 		File[] files = root.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
-				getFiles(file.getAbsolutePath());
+				getFiles(file.getAbsolutePath(),filelist);
 			}else{
 				filelist.add(file.getAbsolutePath());
 			}
@@ -129,4 +135,14 @@ public class UpdJarContent {
 			}
 		}
 	}
+	
+	public static boolean isExists(String jarNewPath){
+		File file = new File(jarNewPath);
+		if (file.exists()) {
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+	
 }
