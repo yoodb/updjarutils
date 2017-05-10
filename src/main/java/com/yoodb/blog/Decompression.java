@@ -29,13 +29,20 @@ public class Decompression {
         while (enumEntry.hasMoreElements()) {  
             JarEntry jarEntry = enumEntry.nextElement();  
             File tarFile = new File(tarDir, jarEntry.getName());  
-            if(jarEntry.getName().contains("META-INF")){
+            /*if(jarEntry.getName().contains("META-INF")){
             	File miFile = new File(tarDir, "META-INF"); 
             	if(!miFile.exists()){
             		miFile.mkdirs();
             	}
             	
-        	}
+        	}*/
+            log.info("原文件路径 -->" + tarFile.getPath());
+    		String path = tarFile.getPath().substring(0,tarFile.getPath().lastIndexOf("\\")+1);
+    		log.info("原文件所属目录 -->" + tarFile.getPath());
+    		File file = new File(path);
+    		if((!file .exists() && !file .isDirectory())){
+    			file.mkdirs();
+    		}
             makeFile(jarEntry, tarFile);  
             if (jarEntry.isDirectory()) {  
                 continue;  
@@ -103,18 +110,18 @@ public class Decompression {
      * @param fileInst 文件实体 
      * @throws IOException 抛出异常 
      */  
-    public static void makeFile(JarEntry jarEntry, File fileInst) {  
+    public static void makeFile(JarEntry jarEntry, File fileInst) { 
         if (!fileInst.exists()) {  
             if (jarEntry.isDirectory()) {  
                 fileInst.mkdirs();  
             } else {  
-                try {  
+                try {
                     fileInst.createNewFile();
                 } catch (IOException e) { 
                 	log.error("创建文件失败>>>".concat(fileInst.getPath()));  
                 }  
             }  
-        }  
+        }
     }  
     
     public static void main(String[] args) {  
